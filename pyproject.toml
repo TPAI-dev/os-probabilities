@@ -1,0 +1,9 @@
+[project]
+name = "os-probabilities-balancer"
+version = "0.1.0"
+description = "Python balancing utilities for OS Probabilities simulation outputs."
+requires-python = ">=3.11"
+license = "MIT"
+
+[project.scripts]
+os-probabilities-balance = "os_probabilities_balancer.__main__:main"

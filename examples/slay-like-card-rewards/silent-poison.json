@@ -1,0 +1,11 @@
+{
+  "character": "silent",
+  "act": 2,
+  "ascension": 7,
+  "deckTags": {
+    "poison": 4,
+    "discard": 1
+  },
+  "recentlyOffered": ["backflip", "neutralize"],
+  "rareMisses": 5
+}

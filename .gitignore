@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.tsbuildinfo/
+coverage/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.pytest_cache/
+target/
+crates/*/pkg/
+
+response.txt

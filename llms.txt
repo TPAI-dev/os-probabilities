@@ -1,0 +1,40 @@
+# OS Probabilities
+
+Purpose: lightweight deterministic probability policies for games, apps, services, and tools.
+
+Primary files:
+- README.md: public overview and commands
+- AGENTS.md: instructions for coding agents
+- docs/lootbox-quickstart.md: practical lootbox integration guide
+- docs/spec-v1.md: policy model and extension rules
+- docs/agent-usability.md: LLM/agent usability contract
+- docs/comparison.md: comparison against weighted random helpers, rules engines, and feature flags
+- docs/when-not-to-use.md: scope boundaries and adoption guidance
+- docs/production-integration.md: server-side integration patterns
+- docs/rust-wasm.md: Rust/WASM status and roadmap
+- benchmarks/README.md: current benchmark and package-size numbers
+- packages/core/src/types.ts: canonical TypeScript types
+- packages/core/src/engine.ts: deterministic runtime
+- packages/adapters/src/index.ts: integration adapters, including lootboxes
+- packages/playground/src/main.ts: hosted playground UI
+- packages/schema/schema/os-probabilities-v1.schema.json: JSON Schema
+- examples/real-scenarios/lootbox-pity-event/scenario.yaml: production-style lootbox scenario
+- examples/integrations: production integration examples
+- fixtures/determinism/golden-vectors.json: cross-runtime determinism fixtures
+
+Useful commands:
+- npm run check
+- npm test
+- npm run test:python
+- npm run build
+- npm run playground:build
+- npm run benchmark -- --write benchmarks/latest.json
+- npm run pack:dry
+- npm run os-probabilities -- scenario examples/real-scenarios/lootbox-pity-event/scenario.yaml
+
+Core constraints:
+- No arbitrary expressions.
+- Paths are only ctx.* and item.*.
+- RNG is PCG32 with explicit seed derivation.
+- Weight math is fixed-scale integer decimal math.
+- Declared order is deterministic tie/order policy.

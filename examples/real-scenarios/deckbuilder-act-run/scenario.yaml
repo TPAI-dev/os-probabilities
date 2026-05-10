@@ -1,0 +1,235 @@
+id: deckbuilder-act-run
+description: A concrete roguelike deckbuilder act with card rewards, shop inventory, relic rewards, pity, synergy, cooldown suppression, and hard policy guardrails.
+spec:
+  schemaVersion: os-probabilities/v1
+  sources:
+    cards:
+      items:
+        - id: venom_strike
+          name: Venom Strike
+          character: rogue
+          unlocked: true
+          rarity: common
+          type: attack
+          tags: [attack, poison]
+          baseWeight: 1
+        - id: quick_guard
+          name: Quick Guard
+          character: rogue
+          unlocked: true
+          rarity: common
+          type: skill
+          tags: [skill, block]
+          baseWeight: 1
+        - id: blade_flurry
+          name: Blade Flurry
+          character: rogue
+          unlocked: true
+          rarity: uncommon
+          type: attack
+          tags: [attack, shiv]
+          baseWeight: 0.75
+        - id: toxin_cloud
+          name: Toxin Cloud
+          character: rogue
+          unlocked: true
+          rarity: uncommon
+          type: skill
+          tags: [skill, poison, aoe]
+          baseWeight: 0.7
+        - id: night_alchemy
+          name: Night Alchemy
+          character: rogue
+          unlocked: true
+          rarity: rare
+          type: power
+          tags: [power, poison, scaling]
+          baseWeight: 0.25
+        - id: momentum
+          name: Momentum
+          character: rogue
+          unlocked: true
+          rarity: rare
+          type: power
+          tags: [power, draw, energy]
+          baseWeight: 0.25
+    shop_items:
+      items:
+        - id: remove_card
+          tags: [service]
+          baseWeight: 1
+        - id: small_potion
+          tags: [potion]
+          baseWeight: 1
+        - id: venom_strike
+          tags: [card, poison]
+          baseWeight: 0.8
+        - id: quick_guard
+          tags: [card, block]
+          baseWeight: 0.8
+        - id: blade_flurry
+          tags: [card, shiv]
+          baseWeight: 0.55
+        - id: night_alchemy
+          tags: [card, rare, poison]
+          baseWeight: 0.2
+    relics:
+      items:
+        - id: toxic_vial
+          rarity: uncommon
+          tags: [poison]
+          baseWeight: 1
+        - id: gamblers_mark
+          rarity: rare
+          tags: [draw]
+          baseWeight: 0.5
+        - id: steady_boots
+          rarity: common
+          tags: [block]
+          baseWeight: 1
+        - id: glass_crown
+          rarity: rare
+          tags: [damage, risk]
+          baseWeight: 0.4
+  tables:
+    combat.card_reward:
+      source: cards
+      draw: sample_without_replacement
+      count: 3
+      constraints:
+        unique: true
+      eligibility:
+        - path: item.character
+          op: equals
+          valuePath: ctx.character
+        - path: item.unlocked
+          op: equals
+          value: true
+      weights:
+        base:
+          path: item.baseWeight
+          default: 1
+        modifiers:
+          - id: poison_deck_synergy
+            kind: multiply
+            factor: 1.35
+            when:
+              - path: ctx.deckTags.poison
+                op: gte
+                value: 3
+              - path: item.tags
+                op: contains
+                value: poison
+          - id: recently_offered_drop
+            kind: drop
+            when:
+              - path: ctx.recentlyOffered
+                op: contains
+                valuePath: item.id
+          - id: rare_pity
+            kind: pity
+            missPath: ctx.rareMisses
+            increasePerMiss: 0.06
+            maxBonus: 0.48
+            when:
+              - path: item.rarity
+                op: equals
+                value: rare
+          - id: rare_guardrail
+            kind: clamp
+            max: 0.95
+            when:
+              - path: item.rarity
+                op: equals
+                value: rare
+    shop.inventory:
+      source: shop_items
+      draw: sample_without_replacement
+      count: 4
+      constraints:
+        unique: true
+      weights:
+        base:
+          path: item.baseWeight
+          default: 1
+        modifiers:
+          - id: affordable_cards
+            kind: multiply
+            factor: 1.2
+            when:
+              - path: ctx.gold
+                op: gte
+                value: 120
+              - path: item.tags
+                op: contains
+                value: card
+          - id: owned_card_drop
+            kind: drop
+            when:
+              - path: ctx.ownedCards
+                op: contains
+                valuePath: item.id
+    elite.relic_reward:
+      source: relics
+      draw: weighted_choice
+      weights:
+        base:
+          path: item.baseWeight
+          default: 1
+        modifiers:
+          - id: poison_relic_synergy
+            kind: multiply
+            factor: 1.5
+            when:
+              - path: ctx.deckTags.poison
+                op: gte
+                value: 4
+              - path: item.tags
+                op: contains
+                value: poison
+          - id: force_accessibility_test
+            kind: set
+            value: 1
+            when:
+              - path: ctx.forceBalancedRelicWeights
+                op: equals
+                value: true
+steps:
+  - id: floor_03_card_reward
+    mode: explain
+    tableId: combat.card_reward
+    seed: run-042:floor-03
+    context:
+      character: rogue
+      deckTags:
+        poison: 2
+        shiv: 1
+      recentlyOffered: []
+      rareMisses: 1
+  - id: floor_08_poison_reward_simulation
+    mode: simulate
+    tableId: combat.card_reward
+    seed: run-042:floor-08
+    runs: 500
+    context:
+      character: rogue
+      deckTags:
+        poison: 4
+        shiv: 1
+      recentlyOffered: [venom_strike]
+      rareMisses: 5
+  - id: floor_10_shop_inventory
+    mode: explain
+    tableId: shop.inventory
+    seed: run-042:shop
+    context:
+      gold: 148
+      ownedCards: [quick_guard]
+  - id: floor_12_elite_relic
+    mode: explain
+    tableId: elite.relic_reward
+    seed: run-042:elite
+    context:
+      deckTags:
+        poison: 4
+      forceBalancedRelicWeights: false

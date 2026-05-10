@@ -1,0 +1,9 @@
+[package]
+name = "os-probabilities-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Deterministic core primitives for OS Probabilities."
+
+[lib]
+path = "src/lib.rs"

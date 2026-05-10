@@ -1,0 +1,17 @@
+{
+  "name": "@os-probabilities/playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser playground for OS Probabilities policies.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@os-probabilities/core": "0.1.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.0"
+  }
+}

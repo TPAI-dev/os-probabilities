@@ -1,0 +1,29 @@
+schemaVersion: os-probabilities/v1
+sources:
+  variants:
+    items:
+      - id: control
+        tags: [stable]
+        weight: 90
+      - id: new_onboarding
+        tags: [experiment]
+        weight: 10
+tables:
+  onboarding.variant:
+    source: variants
+    draw: weighted_choice
+    weights:
+      base:
+        path: item.weight
+        default: 1
+      modifiers:
+        - id: beta_user_boost
+          kind: multiply
+          factor: 3
+          when:
+            - path: ctx.accountTier
+              op: equals
+              value: beta
+            - path: item.id
+              op: equals
+              value: new_onboarding

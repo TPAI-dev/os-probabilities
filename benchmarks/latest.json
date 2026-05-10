@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-05-10T20:59:18.239Z",
+  "node": "v22.21.1",
+  "policy": "examples/lootbox/prob.yaml equivalent embedded benchmark policy",
+  "results": [
+    {
+      "label": "pick lootbox.open",
+      "iterations": 100000,
+      "elapsedMs": 2460.19,
+      "opsPerSecond": 40647
+    },
+    {
+      "label": "explain lootbox.open",
+      "iterations": 10000,
+      "elapsedMs": 262.085,
+      "opsPerSecond": 38156
+    },
+    {
+      "label": "simulate lootbox.open 1000 runs",
+      "iterations": 25,
+      "elapsedMs": 613.268,
+      "opsPerSecond": 41
+    }
+  ],
+  "notes": [
+    "Numbers are local smoke benchmarks, not a formal performance guarantee.",
+    "Run npm run build before running this script so dist files exist."
+  ]
+}

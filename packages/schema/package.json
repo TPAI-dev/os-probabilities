@@ -1,0 +1,52 @@
+{
+  "name": "@os-probabilities/schema",
+  "version": "0.1.0",
+  "description": "JSON Schema for OS Probabilities probability policy files.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema.json": "./schema/os-probabilities-v1.schema.json"
+  },
+  "files": [
+    "dist",
+    "schema"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist .tsbuildinfo"
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TPAI-dev/os-probabilities.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TPAI-dev/os-probabilities/issues"
+  },
+  "homepage": "https://github.com/TPAI-dev/os-probabilities#readme",
+  "keywords": [
+    "probability",
+    "probability-policy",
+    "loot-table",
+    "drop-table",
+    "lootbox",
+    "gacha",
+    "weighted-random",
+    "seeded-rng",
+    "deterministic",
+    "simulation",
+    "pity-system",
+    "game-dev",
+    "json-schema"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

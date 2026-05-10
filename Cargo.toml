@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "crates/os-probabilities-core",
+  "crates/os-probabilities-wasm",
+]
+resolver = "2"

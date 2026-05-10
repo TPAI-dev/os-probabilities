@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "os-probabilities/v1",
+  "rng": {
+    "algorithm": "pcg32",
+    "seed": "vector-seed",
+    "uint32": [1228803170, 634923739, 694937849, 2477061812, 945323449]
+  },
+  "seedDerivation": {
+    "seed": "run-1",
+    "tableId": "combat.reward",
+    "drawIndex": 2,
+    "derivedSeed": "os-probabilities/v1|run-1|combat.reward|2"
+  },
+  "decimal": {
+    "input": "1.25",
+    "scaled": "1250000",
+    "formatted": "1.25"
+  }
+}

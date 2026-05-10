@@ -1,0 +1,21 @@
+{
+  "tableId": "combat.card_reward",
+  "seed": "baseline",
+  "runs": 100,
+  "totalSelections": 300,
+  "selectionCounts": {
+    "venom_strike": { "count": 60, "ratePerRun": 0.6 },
+    "quick_guard": { "count": 40, "ratePerRun": 0.4 }
+  },
+  "tagFrequencies": {
+    "poison": { "count": 60, "ratePerRun": 0.6 },
+    "block": { "count": 40, "ratePerRun": 0.4 }
+  },
+  "rarityFrequencies": {
+    "rare": { "count": 10, "ratePerRun": 0.1 }
+  },
+  "topSelected": [
+    { "id": "venom_strike", "count": 60, "ratePerRun": 0.6 },
+    { "id": "quick_guard", "count": 40, "ratePerRun": 0.4 }
+  ]
+}

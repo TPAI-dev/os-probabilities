@@ -1,0 +1,57 @@
+{
+  "name": "@os-probabilities/cli",
+  "version": "0.1.0",
+  "description": "Command line tools for OS Probabilities policies.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "os-probabilities": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist .tsbuildinfo"
+  },
+  "dependencies": {
+    "@os-probabilities/adapters": "0.1.0",
+    "@os-probabilities/core": "0.1.0",
+    "yaml": "^2.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TPAI-dev/os-probabilities.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TPAI-dev/os-probabilities/issues"
+  },
+  "homepage": "https://github.com/TPAI-dev/os-probabilities#readme",
+  "keywords": [
+    "probability",
+    "probability-policy",
+    "loot-table",
+    "drop-table",
+    "lootbox",
+    "gacha",
+    "weighted-random",
+    "seeded-rng",
+    "deterministic",
+    "simulation",
+    "pity-system",
+    "game-dev",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

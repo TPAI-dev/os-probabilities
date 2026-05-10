@@ -1,0 +1,35 @@
+{
+  "name": "os-probabilities-repo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Define random decisions once. Validate, simulate, explain, and run them anywhere.",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "npm@11.7.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "os-probabilities": "node packages/cli/dist/index.js",
+    "balance": "PYTHONPATH=tools/python python3 -m os_probabilities_balancer",
+    "benchmark": "node benchmarks/runtime.mjs",
+    "check": "tsc -b --pretty false",
+    "clean": "npm run clean --workspaces --if-present",
+    "docs:build": "npm run playground:build",
+    "pack:dry": "npm_config_cache=/tmp/os-probabilities-npm-cache npm pack --workspace @os-probabilities/core --workspace @os-probabilities/schema --workspace @os-probabilities/adapters --workspace @os-probabilities/cli --dry-run",
+    "playground:build": "npm run build -w @os-probabilities/playground",
+    "playground:dev": "npm run dev -w @os-probabilities/playground --",
+    "publish:dry": "npm_config_cache=/tmp/os-probabilities-npm-cache npm publish --workspace @os-probabilities/core --workspace @os-probabilities/schema --workspace @os-probabilities/adapters --workspace @os-probabilities/cli --dry-run",
+    "publish:packages": "npm publish --workspace @os-probabilities/core --workspace @os-probabilities/schema --workspace @os-probabilities/adapters --workspace @os-probabilities/cli",
+    "test": "vitest run",
+    "test:python": "python3 -m unittest discover -s tools/python/tests",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.2",
+    "vite": "^7.3.0"
+  }
+}

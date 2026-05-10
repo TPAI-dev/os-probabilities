@@ -1,0 +1,364 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://os-probabilities.dev/schemas/os-probabilities-v1.schema.json",
+  "title": "OS Probabilities V1 Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "sources", "tables"],
+  "properties": {
+    "schemaVersion": {
+      "const": "os-probabilities/v1"
+    },
+    "sources": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "tables": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/table"
+      }
+    }
+  },
+  "$defs": {
+    "decimal": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,6})?$"
+        }
+      ]
+    },
+    "dataPath": {
+      "type": "string",
+      "pattern": "^(ctx|item)\\.[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*$"
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "op"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/dataPath"
+        },
+        "op": {
+          "enum": ["equals", "notEquals", "in", "notIn", "gt", "gte", "lt", "lte", "contains", "exists"]
+        },
+        "value": true,
+        "valuePath": {
+          "$ref": "#/$defs/dataPath"
+        }
+      },
+      "not": {
+        "required": ["value", "valuePath"]
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceItem"
+          }
+        }
+      }
+    },
+    "sourceItem": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "$ref": "#/$defs/decimal"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rarity": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "weightBase": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/decimal"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/dataPath"
+            },
+            "value": {
+              "$ref": "#/$defs/decimal"
+            },
+            "default": {
+              "$ref": "#/$defs/decimal"
+            }
+          },
+          "anyOf": [
+            {
+              "required": ["path"]
+            },
+            {
+              "required": ["value"]
+            }
+          ]
+        }
+      ]
+    },
+    "weightModifier": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/multiplyModifier"
+        },
+        {
+          "$ref": "#/$defs/addModifier"
+        },
+        {
+          "$ref": "#/$defs/pityModifier"
+        },
+        {
+          "$ref": "#/$defs/setModifier"
+        },
+        {
+          "$ref": "#/$defs/clampModifier"
+        },
+        {
+          "$ref": "#/$defs/dropModifier"
+        }
+      ]
+    },
+    "modifierBase": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "when": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        }
+      }
+    },
+    "multiplyModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["factor"],
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "multiply"
+            },
+            "when": true,
+            "factor": {
+              "$ref": "#/$defs/decimal"
+            }
+          }
+        }
+      ]
+    },
+    "addModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "add"
+            },
+            "when": true,
+            "value": {
+              "$ref": "#/$defs/decimal"
+            }
+          }
+        }
+      ]
+    },
+    "pityModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["missPath", "increasePerMiss", "maxBonus"],
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "pity"
+            },
+            "when": true,
+            "missPath": {
+              "$ref": "#/$defs/dataPath"
+            },
+            "increasePerMiss": {
+              "$ref": "#/$defs/decimal"
+            },
+            "maxBonus": {
+              "$ref": "#/$defs/decimal"
+            }
+          }
+        }
+      ]
+    },
+    "setModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "set"
+            },
+            "when": true,
+            "value": {
+              "$ref": "#/$defs/decimal"
+            }
+          }
+        }
+      ]
+    },
+    "clampModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "anyOf": [
+            {
+              "required": ["min"]
+            },
+            {
+              "required": ["max"]
+            }
+          ],
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "clamp"
+            },
+            "when": true,
+            "min": {
+              "$ref": "#/$defs/decimal"
+            },
+            "max": {
+              "$ref": "#/$defs/decimal"
+            }
+          }
+        }
+      ]
+    },
+    "dropModifier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/modifierBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": true,
+            "kind": {
+              "const": "drop"
+            },
+            "when": true
+          }
+        }
+      ]
+    },
+    "weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/weightBase"
+        },
+        "modifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/weightModifier"
+          }
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "draw"],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "draw": {
+          "enum": ["weighted_choice", "sample_with_replacement", "sample_without_replacement"]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "eligibility": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "weights": {
+          "$ref": "#/$defs/weights"
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unique": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

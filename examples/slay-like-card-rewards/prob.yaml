@@ -1,0 +1,113 @@
+schemaVersion: os-probabilities/v1
+sources:
+  cards:
+    items:
+      - id: poisoned_dagger
+        name: Poisoned Dagger
+        character: silent
+        unlocked: true
+        rarity: common
+        type: attack
+        tags: [attack, poison]
+        baseWeight: 1
+      - id: backflip
+        name: Backflip
+        character: silent
+        unlocked: true
+        rarity: common
+        type: skill
+        tags: [skill, block, draw]
+        baseWeight: 1
+      - id: catalyst
+        name: Catalyst
+        character: silent
+        unlocked: true
+        rarity: uncommon
+        type: skill
+        tags: [skill, poison, scaling]
+        baseWeight: 0.8
+      - id: corpse_explosion
+        name: Corpse Explosion
+        character: silent
+        unlocked: true
+        rarity: rare
+        type: skill
+        tags: [skill, poison, aoe]
+        baseWeight: 0.25
+      - id: footwork
+        name: Footwork
+        character: silent
+        unlocked: true
+        rarity: uncommon
+        type: power
+        tags: [power, dexterity]
+        baseWeight: 0.7
+      - id: neutralize
+        name: Neutralize
+        character: silent
+        unlocked: true
+        rarity: common
+        type: attack
+        tags: [attack, weak]
+        baseWeight: 0.9
+      - id: accuracy
+        name: Accuracy
+        character: silent
+        unlocked: true
+        rarity: uncommon
+        type: power
+        tags: [power, shiv]
+        baseWeight: 0.65
+      - id: adrenaline
+        name: Adrenaline
+        character: silent
+        unlocked: true
+        rarity: rare
+        type: skill
+        tags: [skill, draw, energy]
+        baseWeight: 0.25
+tables:
+  combat.card_reward:
+    source: cards
+    draw: sample_without_replacement
+    count: 3
+    constraints:
+      unique: true
+    eligibility:
+      - path: item.character
+        op: equals
+        valuePath: ctx.character
+      - path: item.unlocked
+        op: equals
+        value: true
+    weights:
+      base:
+        path: item.baseWeight
+        default: 1
+      modifiers:
+        - id: poison_synergy
+          kind: multiply
+          factor: 1.25
+          when:
+            - path: ctx.deckTags.poison
+              op: gte
+              value: 3
+            - path: item.tags
+              op: contains
+              value: poison
+        - id: recently_offered_suppression
+          kind: multiply
+          factor: 0.2
+          when:
+            - path: ctx.recentlyOffered
+              op: contains
+              valuePath: item.id
+        - id: rare_miss_pity
+          kind: pity
+          missPath: ctx.rareMisses
+          increasePerMiss: 0.05
+          maxBonus: 0.4
+          when:
+            - path: item.rarity
+              op: equals
+              value: rare

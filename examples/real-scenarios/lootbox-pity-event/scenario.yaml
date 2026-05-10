@@ -1,0 +1,118 @@
+id: lootbox-pity-event
+description: Production-style lootbox policy with guaranteed currency, event boosts, owned duplicate suppression, and legendary pity.
+spec:
+  schemaVersion: os-probabilities/v1
+  sources:
+    loot:
+      items:
+        - id: coin_pack_small
+          name: Small Coin Pack
+          rarity: common
+          tags: [currency, guaranteed]
+          weight: 80
+        - id: crafting_shards
+          name: Crafting Shards
+          rarity: common
+          tags: [currency]
+          weight: 50
+        - id: frost_blade
+          name: Frost Blade
+          rarity: rare
+          tags: [weapon, event, frost]
+          weight: 12
+        - id: ember_wings
+          name: Ember Wings
+          rarity: epic
+          tags: [cosmetic, event, fire]
+          weight: 6
+        - id: dragon_mount
+          name: Dragon Mount
+          rarity: legendary
+          tags: [mount, legendary]
+          weight: 1
+        - id: aurora_crown
+          name: Aurora Crown
+          rarity: legendary
+          tags: [cosmetic, legendary, event]
+          weight: 0.8
+  tables:
+    lootbox.open:
+      source: loot
+      draw: sample_without_replacement
+      count: 3
+      constraints:
+        unique: true
+      weights:
+        base:
+          path: item.weight
+          default: 1
+        modifiers:
+          - id: event_item_boost
+            kind: multiply
+            factor: 2
+            when:
+              - path: ctx.activeEvent
+                op: equals
+                value: frost_festival
+              - path: item.tags
+                op: contains
+                value: event
+          - id: legendary_pity
+            kind: pity
+            missPath: ctx.legendaryMisses
+            increasePerMiss: 0.15
+            maxBonus: 5
+            when:
+              - path: item.rarity
+                op: equals
+                value: legendary
+          - id: duplicate_suppression
+            kind: drop
+            when:
+              - path: ctx.ownedItems
+                op: contains
+                valuePath: item.id
+          - id: legendary_cap
+            kind: clamp
+            max: 7
+            when:
+              - path: item.rarity
+                op: equals
+                value: legendary
+    lootbox.guaranteed_currency:
+      source: loot
+      draw: weighted_choice
+      eligibility:
+        - path: item.tags
+          op: contains
+          value: currency
+      weights:
+        base:
+          path: item.weight
+          default: 1
+steps:
+  - id: validate_player_open_explain
+    mode: explain
+    tableId: lootbox.open
+    seed: player-123:frost-box:open-0001
+    context:
+      activeEvent: frost_festival
+      legendaryMisses: 18
+      ownedItems: [frost_blade]
+  - id: guaranteed_currency_explain
+    mode: explain
+    tableId: lootbox.guaranteed_currency
+    seed: player-123:frost-box:open-0001:currency
+    context:
+      activeEvent: frost_festival
+      legendaryMisses: 18
+      ownedItems: [frost_blade]
+  - id: balance_1000_opens
+    mode: simulate
+    tableId: lootbox.open
+    seed: frost-box-balance-v1
+    runs: 1000
+    context:
+      activeEvent: frost_festival
+      legendaryMisses: 18
+      ownedItems: [frost_blade]

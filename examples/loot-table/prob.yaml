@@ -1,0 +1,42 @@
+schemaVersion: os-probabilities/v1
+sources:
+  loot:
+    items:
+      - id: gold_cache
+        tier: common
+        tags: [currency]
+        weight: 60
+      - id: potion
+        tier: common
+        tags: [consumable]
+        weight: 25
+      - id: rare_relic
+        tier: rare
+        tags: [relic]
+        weight: 5
+      - id: map_fragment
+        tier: uncommon
+        tags: [quest]
+        weight: 10
+tables:
+  chest.reward:
+    source: loot
+    draw: sample_without_replacement
+    count: 2
+    constraints:
+      unique: true
+    weights:
+      base:
+        path: item.weight
+        default: 1
+      modifiers:
+        - id: quest_focus
+          kind: multiply
+          factor: 2
+          when:
+            - path: ctx.activeQuest
+              op: equals
+              value: mapmaker
+            - path: item.tags
+              op: contains
+              value: quest
