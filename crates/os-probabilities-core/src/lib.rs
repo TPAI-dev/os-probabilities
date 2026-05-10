@@ -149,4 +149,37 @@ mod tests {
             "os-probabilities/v1|run-1|combat.reward|2"
         );
     }
+
+    #[test]
+    fn primitives_match_golden_fixture_file() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/determinism/golden-vectors.json"
+        ))
+        .expect("fixture should parse");
+        let rng = &fixture["rng"];
+        let mut pcg = Pcg32::new(rng["seed"].as_str().expect("rng.seed"));
+        let expected = rng["uint32"]
+            .as_array()
+            .expect("rng.uint32")
+            .iter()
+            .map(|value| value.as_u64().expect("u32 value") as u32)
+            .collect::<Vec<_>>();
+        let actual = (0..expected.len()).map(|_| pcg.next_u32()).collect::<Vec<_>>();
+
+        assert_eq!(actual, expected);
+        assert_eq!(
+            derive_seed(
+                fixture["seedDerivation"]["seed"].as_str().expect("seed"),
+                fixture["seedDerivation"]["tableId"].as_str().expect("tableId"),
+                fixture["seedDerivation"]["drawIndex"].as_u64().expect("drawIndex") as usize,
+            ),
+            fixture["seedDerivation"]["derivedSeed"].as_str().expect("derivedSeed")
+        );
+        assert_eq!(
+            parse_decimal(fixture["decimal"]["input"].as_str().expect("decimal.input"))
+                .expect("decimal should parse")
+                .to_string(),
+            fixture["decimal"]["scaled"].as_str().expect("decimal.scaled")
+        );
+    }
 }

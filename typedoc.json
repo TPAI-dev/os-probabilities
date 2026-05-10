@@ -1,0 +1,15 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "OS Probabilities API",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/adapters/src/index.ts",
+    "packages/schema/src/index.ts"
+  ],
+  "out": "packages/playground/dist/api",
+  "readme": "none",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "githubPages": false
+}

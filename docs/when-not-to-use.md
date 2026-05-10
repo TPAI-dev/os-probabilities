@@ -21,3 +21,9 @@ Use OS Probabilities when the random decision is part of product behavior:
 
 The design target is not "more random." The design target is random behavior that can be declared, reviewed, tested, replayed, explained, and ported.
 
+
+## Compliance and safety boundaries
+
+OS Probabilities is not a gambling compliance product, not a cryptographic RNG, and not a substitute for legal review. It can make odds declarative, reproducible, explainable, and easier to audit, but regulated products still need domain-specific controls outside this library.
+
+It is also not a hosted feature flag platform. Use a feature flag platform when you need hosted targeting UI, kill switches, experimentation analytics, approval workflows, or remote config distribution. Use OS Probabilities when deterministic probability policy is the core requirement.

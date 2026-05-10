@@ -6,6 +6,7 @@ const slayConfig = fileURLToPath(new URL("../../../examples/slay-like-card-rewar
 const slayContext = fileURLToPath(new URL("../../../examples/slay-like-card-rewards/silent-poison.json", import.meta.url));
 const deckbuilderScenario = fileURLToPath(new URL("../../../examples/real-scenarios/deckbuilder-act-run/scenario.yaml", import.meta.url));
 const lootboxScenario = fileURLToPath(new URL("../../../examples/real-scenarios/lootbox-pity-event/scenario.yaml", import.meta.url));
+const liveEventScenario = fileURLToPath(new URL("../../../examples/real-scenarios/live-event-lootbox/scenario.yaml", import.meta.url));
 
 describe("CLI", () => {
   it("validates an example policy", async () => {
@@ -103,6 +104,23 @@ describe("CLI", () => {
       "guaranteed_currency_explain",
       "balance_1000_opens"
     ]);
+  });
+
+
+  it("runs the live event lootbox scenario", async () => {
+    const io = createIo();
+    const code = await main(["scenario", liveEventScenario], io);
+    const output = JSON.parse(io.stdoutText()) as { id: string; steps: Array<{ id: string; mode: string }> };
+
+    expect(code).toBe(0);
+    expect(output.id).toBe("live-event-lootbox");
+    expect(output.steps.map((step) => step.id)).toEqual([
+      "veteran_event_open_explain",
+      "veteran_event_balance_simulation",
+      "new_player_open_explain",
+      "guaranteed_currency_roll"
+    ]);
+    expect(output.steps.some((step) => step.mode === "simulate")).toBe(true);
   });
 
 });

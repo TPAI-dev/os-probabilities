@@ -10,6 +10,8 @@ Define random decisions once. Validate, simulate, explain, and run them anywhere
 OS Probabilities is a deterministic probability policy system for games and apps. It is built for lootboxes, loot tables, card rewards, feature rollouts, procedural events, and any randomized decision that needs to be replayable, testable, and explainable.
 
 - Playground: https://tpai-dev.github.io/os-probabilities/
+- API docs: https://tpai-dev.github.io/os-probabilities/api/
+- 5-minute lootbox guide: [docs/5-minute-lootbox.md](docs/5-minute-lootbox.md)
 - Lootbox quickstart: [docs/lootbox-quickstart.md](docs/lootbox-quickstart.md)
 - Spec: [docs/spec-v1.md](docs/spec-v1.md)
 - Agent guide: [llms.txt](llms.txt)
@@ -165,7 +167,7 @@ See [docs/rust-wasm.md](docs/rust-wasm.md).
 - paths: `ctx.*` and `item.*` only
 - predicates: declarative operators only, no expression evaluation
 
-Golden vectors live in [fixtures/determinism/golden-vectors.json](fixtures/determinism/golden-vectors.json). TypeScript and Rust tests verify the same PCG32 vector and seed derivation behavior.
+Golden vectors live in [fixtures/determinism/golden-vectors.json](fixtures/determinism/golden-vectors.json). Full runtime fixtures live in [fixtures/determinism/runtime-cases.json](fixtures/determinism/runtime-cases.json). TypeScript and Rust tests verify deterministic behavior from shared fixture files.
 
 ## When Not To Use This
 
@@ -193,7 +195,7 @@ npm run pack:dry
 
 ## Production Integration
 
-See [docs/production-integration.md](docs/production-integration.md) for server-side lootbox opens, support explanations, feature rollout assignments, and deployment guidance.
+See [docs/production-integration.md](docs/production-integration.md) for server-side lootbox opens, support explanations, feature rollout assignments, and deployment guidance. See [docs/cross-runtime-determinism.md](docs/cross-runtime-determinism.md), [docs/python-balancing.md](docs/python-balancing.md), and [docs/game-engine-integration.md](docs/game-engine-integration.md) for runtime and integration paths.
 
 ## Verification
 
@@ -203,12 +205,14 @@ npm test
 npm run test:python
 npm run build
 npm run playground:build
+npm run docs:api
 npm run pack:dry
+npm run smoke:install
 cargo test --workspace --locked
 cargo build -p os-probabilities-wasm --target wasm32-unknown-unknown --locked
 ```
 
 ## Release
 
-See [RELEASE.md](RELEASE.md). Packages are configured for public npm publish with provenance through the release workflow.
+See [RELEASE.md](RELEASE.md) and [docs/release-automation.md](docs/release-automation.md). Packages are configured for public npm trusted publishing with provenance through the release workflow.
 

@@ -1,0 +1,27 @@
+name: Determinism mismatch
+description: Report a mismatch between runtimes, seeds, traces, simulations, or fixture expectations.
+title: "determinism: "
+labels: [determinism, needs-triage]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Which runtimes or commands disagree?
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Fixture or policy
+      description: Include the policy, context, table ID, seed, and expected versus actual output.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Runtime versions
+      description: Include package versions, Rust crate SHA, browser, Node, Python, or WASM details.
+    validations:
+      required: true

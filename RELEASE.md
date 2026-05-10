@@ -11,9 +11,10 @@ npm test
 npm run test:python
 npm run build
 npm run playground:build
+npm run docs:api
+npm run smoke:install
 npm run benchmark -- --write benchmarks/latest.json
 npm run pack:dry
-npm run publish:dry
 cargo test --workspace --locked
 cargo build -p os-probabilities-wasm --target wasm32-unknown-unknown --locked
 ```
@@ -29,23 +30,22 @@ The repo is configured for GitHub Pages through `.github/workflows/pages.yml`.
 
 ## Publish npm Packages
 
-Preferred path: publish through GitHub Actions so npm provenance works correctly.
+Preferred path: publish through GitHub Actions trusted publishing so npm provenance works correctly and no long-lived npm write token is required.
 
-1. Add an npm automation token as the repository secret `NPM_TOKEN`.
+1. Configure npm trusted publishers for every package using owner `TPAI-dev`, repo `os-probabilities`, and workflow `release.yml`.
 2. Push a `v*` tag.
-3. Publish a GitHub release for that tag.
-4. The release workflow publishes these public workspaces:
+3. The release workflow verifies and publishes these public workspaces:
    - `@os-probabilities/core`
    - `@os-probabilities/schema`
    - `@os-probabilities/adapters`
    - `@os-probabilities/cli`
 
-Manual local fallback:
+Manual local fallback should be rare because it will not get GitHub Actions provenance unless npm supports the local environment. Use it only for emergency patching and document the reason in release notes.
 
 ```bash
 npm adduser
-npm run publish:packages
+npm run publish:packages -- --provenance=false
 ```
 
-If provenance fails locally, publish from GitHub Actions instead of disabling provenance.
+See [docs/release-automation.md](docs/release-automation.md).
 

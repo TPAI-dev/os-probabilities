@@ -1,0 +1,250 @@
+id: live-event-lootbox
+description: Live-ops lootbox policy with event boosts, class relevance, duplicate suppression, cooldowns, economy caps, pity, explanation, and simulation.
+spec:
+  schemaVersion: os-probabilities/v1
+  sources:
+    rewards:
+      items:
+        - id: coins_500
+          name: 500 Coins
+          enabled: true
+          minLevel: 1
+          rarity: common
+          tags: [currency, economy]
+          weight: 80
+        - id: shards_25
+          name: 25 Crafting Shards
+          enabled: true
+          minLevel: 1
+          rarity: common
+          tags: [currency, crafting]
+          weight: 55
+        - id: starter_relic_cache
+          name: Starter Relic Cache
+          enabled: true
+          minLevel: 1
+          rarity: common
+          tags: [starter, utility]
+          weight: 18
+        - id: frost_rapier
+          name: Frost Rapier
+          enabled: true
+          minLevel: 5
+          rarity: rare
+          class: rogue
+          tags: [weapon, frost_festival, event]
+          weight: 11
+        - id: ranger_bow
+          name: Northern Ranger Bow
+          enabled: true
+          minLevel: 5
+          rarity: rare
+          class: ranger
+          tags: [weapon, frost_festival, event]
+          weight: 11
+        - id: shard_cache_large
+          name: Large Shard Cache
+          enabled: true
+          minLevel: 10
+          rarity: rare
+          tags: [currency, crafting]
+          weight: 16
+        - id: aurora_wings
+          name: Aurora Wings
+          enabled: true
+          minLevel: 15
+          rarity: epic
+          tags: [cosmetic, frost_festival, event]
+          weight: 6
+        - id: guild_banner_frost
+          name: Frost Guild Banner
+          enabled: true
+          minLevel: 20
+          rarity: epic
+          tags: [cosmetic, guild, frost_festival, event]
+          weight: 5
+        - id: dragon_mount
+          name: Dragon Mount
+          enabled: true
+          minLevel: 25
+          rarity: legendary
+          tags: [mount, legendary]
+          weight: 1
+        - id: aurora_crown
+          name: Aurora Crown
+          enabled: true
+          minLevel: 25
+          rarity: legendary
+          tags: [cosmetic, legendary, frost_festival, event]
+          weight: 0.8
+        - id: retired_beta_cloak
+          name: Retired Beta Cloak
+          enabled: false
+          minLevel: 1
+          rarity: legendary
+          tags: [cosmetic, retired]
+          weight: 100
+  tables:
+    lootbox.open:
+      source: rewards
+      draw: sample_without_replacement
+      count: 4
+      constraints:
+        unique: true
+      eligibility:
+        - path: item.enabled
+          op: equals
+          value: true
+        - path: item.minLevel
+          op: lte
+          valuePath: ctx.player.level
+      weights:
+        base:
+          path: item.weight
+          default: 1
+        modifiers:
+          - id: class_relevance_boost
+            kind: multiply
+            factor: 1.35
+            when:
+              - path: item.class
+                op: equals
+                valuePath: ctx.player.class
+          - id: featured_event_boost
+            kind: multiply
+            factor: 2.25
+            when:
+              - path: ctx.activeEvent
+                op: equals
+                value: frost_festival
+              - path: item.tags
+                op: contains
+                value: frost_festival
+          - id: legendary_pity
+            kind: pity
+            missPath: ctx.player.pity.legendaryMisses
+            increasePerMiss: 0.25
+            maxBonus: 12
+            when:
+              - path: item.rarity
+                op: equals
+                value: legendary
+          - id: owned_cosmetic_drop
+            kind: drop
+            when:
+              - path: item.tags
+                op: contains
+                value: cosmetic
+              - path: ctx.player.ownedItems
+                op: contains
+                valuePath: item.id
+          - id: reward_cooldown_drop
+            kind: drop
+            when:
+              - path: ctx.player.cooldownRewards
+                op: contains
+                valuePath: item.id
+          - id: high_balance_currency_cap
+            kind: clamp
+            max: 35
+            when:
+              - path: item.tags
+                op: contains
+                value: currency
+              - path: ctx.player.softCurrency
+                op: gt
+                value: 100000
+          - id: new_player_starter_floor
+            kind: clamp
+            min: 15
+            when:
+              - path: item.tags
+                op: contains
+                value: starter
+              - path: ctx.player.level
+                op: lt
+                value: 10
+    lootbox.guaranteed_currency:
+      source: rewards
+      draw: weighted_choice
+      eligibility:
+        - path: item.enabled
+          op: equals
+          value: true
+        - path: item.tags
+          op: contains
+          value: currency
+      weights:
+        base:
+          path: item.weight
+          default: 1
+        modifiers:
+          - id: high_balance_currency_cap
+            kind: clamp
+            max: 35
+            when:
+              - path: ctx.player.softCurrency
+                op: gt
+                value: 100000
+steps:
+  - id: veteran_event_open_explain
+    mode: explain
+    tableId: lootbox.open
+    seed: lootbox:player-42:frost-box:open-9001
+    context:
+      activeEvent: frost_festival
+      player:
+        id: player-42
+        level: 42
+        class: ranger
+        softCurrency: 125000
+        ownedItems: [aurora_wings, frost_rapier]
+        cooldownRewards: [shard_cache_large]
+        pity:
+          legendaryMisses: 31
+  - id: veteran_event_balance_simulation
+    mode: simulate
+    tableId: lootbox.open
+    seed: frost-festival-veteran-balance-v1
+    runs: 2500
+    context:
+      activeEvent: frost_festival
+      player:
+        id: segment-veteran-ranger
+        level: 42
+        class: ranger
+        softCurrency: 125000
+        ownedItems: [aurora_wings, frost_rapier]
+        cooldownRewards: [shard_cache_large]
+        pity:
+          legendaryMisses: 31
+  - id: new_player_open_explain
+    mode: explain
+    tableId: lootbox.open
+    seed: lootbox:player-7:frost-box:open-0003
+    context:
+      activeEvent: frost_festival
+      player:
+        id: player-7
+        level: 6
+        class: rogue
+        softCurrency: 2500
+        ownedItems: []
+        cooldownRewards: []
+        pity:
+          legendaryMisses: 2
+  - id: guaranteed_currency_roll
+    mode: explain
+    tableId: lootbox.guaranteed_currency
+    seed: lootbox:player-42:frost-box:open-9001:currency
+    context:
+      activeEvent: frost_festival
+      player:
+        id: player-42
+        level: 42
+        class: ranger
+        softCurrency: 125000
+        ownedItems: [aurora_wings, frost_rapier]
+        cooldownRewards: [shard_cache_large]
+        pity:
+          legendaryMisses: 31

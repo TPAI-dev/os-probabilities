@@ -1,0 +1,457 @@
+{
+  "schemaVersion": "os-probabilities/v1",
+  "cases": [
+    {
+      "id": "modifier-unique-trace-v1",
+      "tableId": "fixture.reward",
+      "seed": "fixture-seed-001",
+      "simulationRuns": 25,
+      "context": {
+        "activeEvent": "frost_festival",
+        "rareMisses": 4,
+        "ownedItems": [
+          "legendary_owned"
+        ],
+        "cooldowns": [
+          "epic_cooldown"
+        ],
+        "level": 12
+      },
+      "spec": {
+        "schemaVersion": "os-probabilities/v1",
+        "sources": {
+          "rewards": {
+            "items": [
+              {
+                "id": "common_currency",
+                "enabled": true,
+                "minLevel": 1,
+                "rarity": "common",
+                "tags": [
+                  "currency"
+                ],
+                "weight": 10
+              },
+              {
+                "id": "rare_event_weapon",
+                "enabled": true,
+                "minLevel": 1,
+                "rarity": "rare",
+                "tags": [
+                  "event",
+                  "weapon"
+                ],
+                "weight": 2
+              },
+              {
+                "id": "legendary_owned",
+                "enabled": true,
+                "minLevel": 1,
+                "rarity": "legendary",
+                "tags": [
+                  "event",
+                  "cosmetic"
+                ],
+                "weight": 1
+              },
+              {
+                "id": "epic_event_charm",
+                "enabled": true,
+                "minLevel": 1,
+                "rarity": "epic",
+                "tags": [
+                  "event",
+                  "utility"
+                ],
+                "weight": 4
+              },
+              {
+                "id": "epic_cooldown",
+                "enabled": true,
+                "minLevel": 1,
+                "rarity": "epic",
+                "tags": [
+                  "event",
+                  "utility"
+                ],
+                "weight": 4
+              },
+              {
+                "id": "locked_reward",
+                "enabled": false,
+                "minLevel": 1,
+                "rarity": "rare",
+                "tags": [
+                  "event"
+                ],
+                "weight": 100
+              },
+              {
+                "id": "future_reward",
+                "enabled": true,
+                "minLevel": 20,
+                "rarity": "rare",
+                "tags": [
+                  "event"
+                ],
+                "weight": 100
+              }
+            ]
+          }
+        },
+        "tables": {
+          "fixture.reward": {
+            "source": "rewards",
+            "draw": "sample_without_replacement",
+            "count": 2,
+            "constraints": {
+              "unique": true
+            },
+            "eligibility": [
+              {
+                "path": "item.enabled",
+                "op": "equals",
+                "value": true
+              },
+              {
+                "path": "item.minLevel",
+                "op": "lte",
+                "valuePath": "ctx.level"
+              }
+            ],
+            "weights": {
+              "base": {
+                "path": "item.weight",
+                "default": 1
+              },
+              "modifiers": [
+                {
+                  "id": "currency_bonus",
+                  "kind": "add",
+                  "value": 2,
+                  "when": [
+                    {
+                      "path": "item.tags",
+                      "op": "contains",
+                      "value": "currency"
+                    }
+                  ]
+                },
+                {
+                  "id": "event_boost",
+                  "kind": "multiply",
+                  "factor": 3,
+                  "when": [
+                    {
+                      "path": "ctx.activeEvent",
+                      "op": "equals",
+                      "value": "frost_festival"
+                    },
+                    {
+                      "path": "item.tags",
+                      "op": "contains",
+                      "value": "event"
+                    }
+                  ]
+                },
+                {
+                  "id": "rare_pity",
+                  "kind": "pity",
+                  "missPath": "ctx.rareMisses",
+                  "increasePerMiss": 0.5,
+                  "maxBonus": 3,
+                  "when": [
+                    {
+                      "path": "item.rarity",
+                      "op": "equals",
+                      "value": "rare"
+                    }
+                  ]
+                },
+                {
+                  "id": "owned_drop",
+                  "kind": "drop",
+                  "when": [
+                    {
+                      "path": "ctx.ownedItems",
+                      "op": "contains",
+                      "valuePath": "item.id"
+                    }
+                  ]
+                },
+                {
+                  "id": "cooldown_drop",
+                  "kind": "drop",
+                  "when": [
+                    {
+                      "path": "ctx.cooldowns",
+                      "op": "contains",
+                      "valuePath": "item.id"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "selectedIds": [
+          "epic_event_charm",
+          "common_currency"
+        ],
+        "trace": {
+          "tableId": "fixture.reward",
+          "seed": "fixture-seed-001",
+          "draw": "sample_without_replacement",
+          "requestedCount": 2,
+          "selectedIds": [
+            "epic_event_charm",
+            "common_currency"
+          ],
+          "draws": [
+            {
+              "drawIndex": 0,
+              "candidateCount": 3,
+              "excluded": [
+                {
+                  "id": "legendary_owned",
+                  "reasons": [
+                    "final weight is non-positive"
+                  ]
+                },
+                {
+                  "id": "epic_cooldown",
+                  "reasons": [
+                    "final weight is non-positive"
+                  ]
+                },
+                {
+                  "id": "locked_reward",
+                  "reasons": [
+                    "item.enabled equals true"
+                  ]
+                },
+                {
+                  "id": "future_reward",
+                  "reasons": [
+                    "item.minLevel lte 12"
+                  ]
+                }
+              ],
+              "candidates": [
+                {
+                  "id": "common_currency",
+                  "declaredIndex": 0,
+                  "baseWeight": "10",
+                  "finalWeight": "12",
+                  "finalOdds": 0.375,
+                  "appliedModifiers": [
+                    {
+                      "id": "currency_bonus",
+                      "kind": "add",
+                      "delta": "2",
+                      "before": "10",
+                      "after": "12"
+                    }
+                  ]
+                },
+                {
+                  "id": "rare_event_weapon",
+                  "declaredIndex": 1,
+                  "baseWeight": "2",
+                  "finalWeight": "8",
+                  "finalOdds": 0.25,
+                  "appliedModifiers": [
+                    {
+                      "id": "event_boost",
+                      "kind": "multiply",
+                      "delta": "4",
+                      "before": "2",
+                      "after": "6"
+                    },
+                    {
+                      "id": "rare_pity",
+                      "kind": "pity",
+                      "delta": "2",
+                      "before": "6",
+                      "after": "8"
+                    }
+                  ]
+                },
+                {
+                  "id": "epic_event_charm",
+                  "declaredIndex": 3,
+                  "baseWeight": "4",
+                  "finalWeight": "12",
+                  "finalOdds": 0.375,
+                  "appliedModifiers": [
+                    {
+                      "id": "event_boost",
+                      "kind": "multiply",
+                      "delta": "8",
+                      "before": "4",
+                      "after": "12"
+                    }
+                  ]
+                }
+              ],
+              "totalWeight": "32",
+              "roll": "26.382946",
+              "selectedId": "epic_event_charm"
+            },
+            {
+              "drawIndex": 1,
+              "candidateCount": 2,
+              "excluded": [
+                {
+                  "id": "legendary_owned",
+                  "reasons": [
+                    "final weight is non-positive"
+                  ]
+                },
+                {
+                  "id": "epic_event_charm",
+                  "reasons": [
+                    "already selected"
+                  ]
+                },
+                {
+                  "id": "epic_cooldown",
+                  "reasons": [
+                    "final weight is non-positive"
+                  ]
+                },
+                {
+                  "id": "locked_reward",
+                  "reasons": [
+                    "item.enabled equals true"
+                  ]
+                },
+                {
+                  "id": "future_reward",
+                  "reasons": [
+                    "item.minLevel lte 12"
+                  ]
+                }
+              ],
+              "candidates": [
+                {
+                  "id": "common_currency",
+                  "declaredIndex": 0,
+                  "baseWeight": "10",
+                  "finalWeight": "12",
+                  "finalOdds": 0.6,
+                  "appliedModifiers": [
+                    {
+                      "id": "currency_bonus",
+                      "kind": "add",
+                      "delta": "2",
+                      "before": "10",
+                      "after": "12"
+                    }
+                  ]
+                },
+                {
+                  "id": "rare_event_weapon",
+                  "declaredIndex": 1,
+                  "baseWeight": "2",
+                  "finalWeight": "8",
+                  "finalOdds": 0.4,
+                  "appliedModifiers": [
+                    {
+                      "id": "event_boost",
+                      "kind": "multiply",
+                      "delta": "4",
+                      "before": "2",
+                      "after": "6"
+                    },
+                    {
+                      "id": "rare_pity",
+                      "kind": "pity",
+                      "delta": "2",
+                      "before": "6",
+                      "after": "8"
+                    }
+                  ]
+                }
+              ],
+              "totalWeight": "20",
+              "roll": "3.722088",
+              "selectedId": "common_currency"
+            }
+          ]
+        },
+        "simulation": {
+          "tableId": "fixture.reward",
+          "seed": "fixture-seed-001",
+          "runs": 25,
+          "totalSelections": 50,
+          "selectionCounts": {
+            "epic_event_charm": {
+              "count": 18,
+              "ratePerRun": 0.72
+            },
+            "common_currency": {
+              "count": 16,
+              "ratePerRun": 0.64
+            },
+            "rare_event_weapon": {
+              "count": 16,
+              "ratePerRun": 0.64
+            }
+          },
+          "tagFrequencies": {
+            "event": {
+              "count": 34,
+              "ratePerRun": 1.36
+            },
+            "utility": {
+              "count": 18,
+              "ratePerRun": 0.72
+            },
+            "currency": {
+              "count": 16,
+              "ratePerRun": 0.64
+            },
+            "weapon": {
+              "count": 16,
+              "ratePerRun": 0.64
+            }
+          },
+          "rarityFrequencies": {
+            "epic": {
+              "count": 18,
+              "ratePerRun": 0.72
+            },
+            "common": {
+              "count": 16,
+              "ratePerRun": 0.64
+            },
+            "rare": {
+              "count": 16,
+              "ratePerRun": 0.64
+            }
+          },
+          "topSelected": [
+            {
+              "id": "epic_event_charm",
+              "count": 18,
+              "ratePerRun": 0.72
+            },
+            {
+              "id": "common_currency",
+              "count": 16,
+              "ratePerRun": 0.64
+            },
+            {
+              "id": "rare_event_weapon",
+              "count": 16,
+              "ratePerRun": 0.64
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+name: Bug report
+description: Report incorrect behavior in validation, execution, explanation, simulation, CLI, docs, or examples.
+title: "bug: "
+labels: [bug, needs-triage]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Include the smallest policy, context, seed, and command or API call that reproduces the issue.
+      render: bash
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version, git SHA, or release tag.
+      placeholder: "@os-probabilities/core@0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Node/npm/browser/OS/runtime details.
+    validations:
+      required: false

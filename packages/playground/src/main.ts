@@ -103,6 +103,7 @@ function render(): void {
         <a href="https://github.com/TPAI-dev/os-probabilities" target="_blank" rel="noreferrer">GitHub</a>
         <a href="https://github.com/TPAI-dev/os-probabilities/blob/main/docs/lootbox-quickstart.md" target="_blank" rel="noreferrer">Quickstart</a>
         <a href="https://github.com/TPAI-dev/os-probabilities/blob/main/docs/spec-v1.md" target="_blank" rel="noreferrer">Spec</a>
+        <a href="api/">API</a>
       </nav>
     </header>
 

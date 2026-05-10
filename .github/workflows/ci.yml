@@ -20,8 +20,11 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run playground:build
+      - run: npm run docs:api
       - run: npm run pack:dry
+      - run: npm run smoke:install
       - run: npm run os-probabilities -- scenario examples/real-scenarios/lootbox-pity-event/scenario.yaml
+      - run: npm run os-probabilities -- scenario examples/real-scenarios/live-event-lootbox/scenario.yaml
 
   python:
     runs-on: ubuntu-latest

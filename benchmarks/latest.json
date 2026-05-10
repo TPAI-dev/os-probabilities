@@ -1,25 +1,25 @@
 {
-  "generatedAt": "2026-05-10T20:59:18.239Z",
+  "generatedAt": "2026-05-10T22:10:54.067Z",
   "node": "v22.21.1",
   "policy": "examples/lootbox/prob.yaml equivalent embedded benchmark policy",
   "results": [
     {
       "label": "pick lootbox.open",
       "iterations": 100000,
-      "elapsedMs": 2460.19,
-      "opsPerSecond": 40647
+      "elapsedMs": 2487.314,
+      "opsPerSecond": 40204
     },
     {
       "label": "explain lootbox.open",
       "iterations": 10000,
-      "elapsedMs": 262.085,
-      "opsPerSecond": 38156
+      "elapsedMs": 266.051,
+      "opsPerSecond": 37587
     },
     {
       "label": "simulate lootbox.open 1000 runs",
       "iterations": 25,
-      "elapsedMs": 613.268,
-      "opsPerSecond": 41
+      "elapsedMs": 626.321,
+      "opsPerSecond": 40
     }
   ],
   "notes": [

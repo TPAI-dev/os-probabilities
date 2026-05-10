@@ -1,5 +1,7 @@
 # Lootbox Quickstart
 
+For the shortest end-to-end path, start with [5-Minute Lootbox Integration](5-minute-lootbox.md).
+
 This guide shows why OS Probabilities is useful for a real lootbox system.
 
 ## The Problem

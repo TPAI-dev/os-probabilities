@@ -27,6 +27,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run build -w @os-probabilities/playground -- --base=/os-probabilities/
+      - run: npm run docs:api
       - uses: actions/upload-pages-artifact@v3
         with:
           path: packages/playground/dist

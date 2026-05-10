@@ -1,0 +1,27 @@
+name: Adapter request
+description: Request an integration adapter for a framework, engine, runtime, or product workflow.
+title: "adapter: "
+labels: [adapter, needs-triage]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: Target
+      description: Framework, engine, runtime, or platform.
+      placeholder: "Unity, Godot, Cloudflare Workers, Fastify, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow
+      description: Describe the decision being made, where context comes from, and where the result is stored.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Runtime limits, dependency limits, determinism requirements, security requirements, or deployment details.
+    validations:
+      required: false
