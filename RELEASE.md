@@ -1,6 +1,6 @@
 # Release Checklist
 
-This repo is release-ready once GitHub and npm auth are configured.
+This repo is release-ready. GitHub branch protection, Pages, npm package publication, and npm trusted publishing are configured.
 
 ## Verify
 
@@ -32,7 +32,7 @@ The repo is configured for GitHub Pages through `.github/workflows/pages.yml`.
 
 Preferred path: publish through GitHub Actions trusted publishing so npm provenance works correctly and no long-lived npm write token is required.
 
-1. Configure npm trusted publishers for every package using owner `TPAI-dev`, repo `os-probabilities`, and workflow `release.yml`.
+1. Confirm npm trusted publishers still point to owner `TPAI-dev`, repo `os-probabilities`, and workflow `release.yml`.
 2. Push a `v*` tag.
 3. The release workflow verifies and publishes these public workspaces:
    - `@os-probabilities/core`

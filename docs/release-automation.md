@@ -2,16 +2,16 @@
 
 The release workflow is configured for npm trusted publishing through GitHub Actions OIDC. That is the preferred path because it avoids long-lived npm write tokens and enables npm provenance for public packages.
 
-## Required npm Settings
+## npm Trusted Publisher Settings
 
-Configure a trusted publisher for each package on npmjs.com:
+Trusted publishing is configured for each package on npmjs.com:
 
 - `@os-probabilities/core`
 - `@os-probabilities/schema`
 - `@os-probabilities/adapters`
 - `@os-probabilities/cli`
 
-Use these values:
+Verified values:
 
 - Provider: GitHub Actions
 - GitHub owner: `TPAI-dev`
@@ -36,4 +36,4 @@ The workflow intentionally does not use `NODE_AUTH_TOKEN`. npm trusted publishin
 
 ## Current v0.1.0 Note
 
-`v0.1.0` was manually published after initial account and 2FA setup. Future versions should publish from GitHub Actions once trusted publishers are configured.
+`v0.1.0` was manually published after initial account and 2FA setup. Trusted publishing is now configured, so future versions should publish from GitHub Actions.
